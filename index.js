@@ -7,7 +7,7 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const { createServer } = require("http");
 const { getUsers } = require("./functions/socketFunctions");
-const { db, client } = require("./functions/db.config");
+const { client } = require("./functions/db.config");
 app.use(cors());
 app.use(express.json());
 const server = createServer(app);
