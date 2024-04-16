@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const { createServer } = require("http");
 const { getUsers } = require("./functions/socketFunctions");
 const { client } = require("./functions/db.config");
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 const server = createServer(app);
 const io = new Server(server, {
