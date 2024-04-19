@@ -60,7 +60,7 @@ router.get("/my-games", async (req, res) => {
       opponent: modUsers[g?.sender]?.games,
       games: Array.isArray(allGames[g?.sender]?.games)
         ? [
-            ...allGames[g?.sender],
+            ...allGames[g?.sender]?.games,
             {
               ...g,
               winner: "p1" ? g?.sender : "p2" ? g?.reciever : "",
