@@ -57,7 +57,7 @@ router.get("/my-games", async (req, res) => {
   });
   recGames.forEach((g) => {
     allGames[g?.sender] = {
-      opponent: modUsers[g?.sender]?.games,
+      opponent: modUsers[g?.sender],
       games: Array.isArray(allGames[g?.sender]?.games)
         ? [
             ...allGames[g?.sender]?.games,
