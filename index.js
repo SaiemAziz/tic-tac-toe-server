@@ -7,7 +7,7 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const { createServer } = require("http");
 const { getUsers } = require("./functions/socketFunctions");
-const { client } = require("./functions/db.config");
+const { client, gameCollection } = require("./functions/db.config");
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 const server = createServer(app);
@@ -67,7 +67,10 @@ async function run() {
         m.moves += 1;
         io.to(m?.sender + m?.reciever).emit("next-state", m);
       });
-
+      socket.on("game-ended", async (m) => {
+        await gameCollection?.insertOne(m);
+        io.to(m?.sender + m?.reciever).emit("declaration", m);
+      });
       io.emit("online", {
         online: getUsers(io), // users email and ids
       });
