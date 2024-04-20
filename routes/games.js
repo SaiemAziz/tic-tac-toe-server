@@ -44,13 +44,23 @@ router.get("/my-games", async (req, res) => {
             ...allGames[g?.reciever]?.games,
             {
               ...g,
-              winner: "p1" ? g?.sender : "p2" ? g?.reciever : "",
+              winner:
+                g?.winner !== "draw"
+                  ? g?.winner === "p1"
+                    ? g?.sender
+                    : g?.reciever
+                  : "",
             },
           ]
         : [
             {
               ...g,
-              winner: "p1" ? g?.sender : "p2" ? g?.reciever : "",
+              winner:
+                g?.winner !== "draw"
+                  ? g?.winner === "p1"
+                    ? g?.sender
+                    : g?.reciever
+                  : "",
             },
           ],
     };
@@ -63,18 +73,30 @@ router.get("/my-games", async (req, res) => {
             ...allGames[g?.sender]?.games,
             {
               ...g,
-              winner: "p1" ? g?.sender : "p2" ? g?.reciever : "",
+              winner:
+                g?.winner !== "draw"
+                  ? g?.winner === "p1"
+                    ? g?.sender
+                    : g?.reciever
+                  : "",
             },
           ]
         : [
             {
               ...g,
-              winner: "p1" ? g?.sender : "p2" ? g?.reciever : "",
+              winner:
+                g?.winner !== "draw"
+                  ? g?.winner === "p1"
+                    ? g?.sender
+                    : g?.reciever
+                  : "",
             },
           ],
     };
   });
-
+  for (let u in allGames) {
+    allGames[u].games.sort((a, b) => b?.time - a?.time);
+  }
   res.send({ data: allGames });
 });
 

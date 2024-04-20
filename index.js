@@ -24,7 +24,7 @@ const io = new Server(server, {
 
 const userRoute = require("./routes/user");
 const gameRoute = require("./routes/games");
-
+const pair = {};
 async function run() {
   io.on("connection", (socket) => {
     let user = socket?.handshake?.query;
@@ -44,6 +44,7 @@ async function run() {
       });
 
       socket.on("both-accepted", (m) => {
+        pair[m?.sender] = m?.reciever;
         io.to(m?.sender + m?.reciever).emit("start-game", m);
       });
 
@@ -57,11 +58,19 @@ async function run() {
       socket.on("get-free", (m) => {
         io.busy = io?.busy.filter((u) => u !== m?.email);
         // else io.busy = [m?.email];
+        io.to(m?.sender + m?.reciever).emit("opponent-left", m);
         io.emit("online", {
           online: getUsers(io), // users email and ids
         });
       });
-
+      socket.on("restart-request", (m) => {
+        // console.log("restart-request", m);
+        io.to(m?.sender + m?.reciever).emit("restart-request-send", m);
+      });
+      socket.on("restart-request-response", (m) => {
+        // console.log("restart-request-response", m);
+        io.to(m?.sender + m?.reciever).emit("restart-request-responded", m);
+      });
       socket.on("moves", (m) => {
         m.player1 = !m?.player1;
         m.moves += 1;
@@ -75,8 +84,24 @@ async function run() {
         online: getUsers(io), // users email and ids
       });
       socket.on("disconnect", () => {
+        let online = getUsers(io);
+
+        for (let u in pair) {
+          if (
+            Object.keys(online).includes(u) &&
+            Object.keys(online).includes(pair[u])
+          )
+            return;
+
+          let sender = u;
+          let reciever = pair[u];
+          io.to(sender + reciever).emit("opponent-left", {
+            sender: sender,
+            reciever: reciever,
+          });
+        }
         io.emit("online", {
-          online: getUsers(io), // users email and ids
+          online, // users email and ids
         });
       });
     }
